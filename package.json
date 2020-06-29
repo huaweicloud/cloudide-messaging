@@ -1,0 +1,32 @@
+{
+    "name": "messaging",
+    "version": "0.0.1",
+    "description": "expose function among iframe with Promise support based on postMessage API",
+    "main": "messaging.js",
+    "scripts": {
+        "build": "tsc",
+        "test": "test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://git.huawei.com/cloudide/messaging.git"
+    },
+    "keywords": [
+        "postMessage",
+        "Promise"
+    ],
+    "author": {
+        "name": "yewei",
+        "email": "weiye.ye@huawei.com"
+    },
+    "license": "SEE LICENSE IN LICENSE.txt",
+    "devDependencies": {
+        "@types/uuid": "^3.4.5",
+        "typescript": "^2.9.2",
+        "typescript-formatter": "7.2.2"
+    },
+    "dependencies": {
+        "reflect-metadata": "^0.1.13",
+        "uuid": "^3.3.3"
+    }
+}
