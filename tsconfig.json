@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "experimentalDecorators": true,
+        "noUnusedLocals": true,
+        "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
+        "module": "commonjs",
+        "target": "es6",
+        "declaration": true,
+        "sourceMap": false
+    },
+    "files": [
+        "messaging.ts"
+    ]
+}
