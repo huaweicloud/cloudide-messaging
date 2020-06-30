@@ -4,6 +4,7 @@
     "description": "expose function among iframes with Promise support based on postMessage API",
     "main": "messaging.js",
     "scripts": {
+        "prepare": "npm run build",
         "build": "tsc",
         "test": "test"
     },
