@@ -1,6 +1,6 @@
 {
     "name": "@cloudide/messaging",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "expose function among iframes with Promise support based on postMessage API",
     "main": "messaging.js",
     "types": "messaging.d.ts",
@@ -10,7 +10,8 @@
     "scripts": {
         "prepare": "npm run build",
         "build": "tsc",
-        "test": "test"
+        "test": "test",
+        "eslint": "eslint 'messaging.ts' --quiet --fix"
     },
     "repository": {
         "type": "git",
@@ -27,7 +28,13 @@
     "license": "SEE LICENSE IN LICENSE",
     "devDependencies": {
         "@types/uuid": "^3.4.5",
-        "typescript": "^2.9.2",
+        "@typescript-eslint/eslint-plugin": "^3.6.1",
+        "@typescript-eslint/parser": "^3.6.1",
+        "eslint": "^7.4.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.4",
+        "prettier": "^2.0.5",
+        "typescript": "^3.9.6",
         "typescript-formatter": "7.2.2"
     },
     "dependencies": {

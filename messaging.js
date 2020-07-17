@@ -4,14 +4,16 @@
  * SPDX-License-Identifier: MIT
  ********************************************************************************/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.call = exports.expose = exports.exposable = exports.messaging = exports.Messaging = exports.Deferred = void 0;
 const uuid_1 = require("uuid");
 require("reflect-metadata");
 class Deferred {
@@ -107,13 +109,15 @@ class Messaging {
         if (!remoteCall.func) {
             return;
         }
-        const funcName = remoteCall.func.indexOf('::') >= 0 ?
-            remoteCall.func.substr(remoteCall.func.indexOf('::') + 2) : remoteCall.func;
+        const funcName = remoteCall.func.indexOf('::') >= 0
+            ? remoteCall.func.substr(remoteCall.func.indexOf('::') + 2)
+            : remoteCall.func;
         const func = this.exposedFunctions.get(funcName);
         if (func) {
             this.executingCalls.set(remoteCall.id, remoteCall.func);
             const args = remoteCall.args ? remoteCall.args : [];
-            func(...args).then(ret => {
+            func(...args)
+                .then((ret) => {
                 this.executingCalls.delete(remoteCall.id);
                 // send notify to remote when function call completed
                 this.sendRemoteCall({
@@ -125,7 +129,8 @@ class Messaging {
                     to: remoteCall.from,
                     from: remoteCall.to
                 });
-            }).catch(err => {
+            })
+                .catch((err) => {
                 const errData = {};
                 Object.getOwnPropertyNames(err).forEach((value, index) => {
                     errData[value] = err[value];

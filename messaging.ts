@@ -9,9 +9,9 @@ import 'reflect-metadata';
 export class Deferred<T> {
     resolve!: (value?: T) => void;
     reject!: (err?: any) => void;
-    isPending: boolean = true;
-    isFulfilled: boolean = false;
-    isRejected: boolean = false;
+    isPending = true;
+    isFulfilled = false;
+    isRejected = false;
 
     promise = new Promise<T>((resolve, reject) => {
         this.resolve = (value) => {
@@ -49,7 +49,6 @@ export interface RemoteCall {
  * page work with messaging protocal must implements the IframeLike Interface
  */
 export class Messaging {
-
     private static instance: Messaging | undefined;
 
     private exposedFunctions: Map<string, (...args: any[]) => Promise<any>> = new Map();
@@ -83,7 +82,9 @@ export class Messaging {
 
     static getInstance(): Messaging | undefined {
         if (!Messaging.instance) {
-            console.log('Messaging has not been initialized, using "bind" function to bind and initialize Messaging instance');
+            console.log(
+                'Messaging has not been initialized, using "bind" function to bind and initialize Messaging instance'
+            );
         }
         return Messaging.instance;
     }
@@ -102,11 +103,9 @@ export class Messaging {
         this.pendingCalls.set(remoteCall.id, deferred);
         this.iframeContext.postMessage(remoteCall);
         return deferred;
-
     }
 
     private onRemoteCall(remoteCall: RemoteCall): void {
-
         // discard message sent from this instance
         if (!remoteCall || remoteCall.from === this.from) {
             // console.log(`ack received: remoteCall.from`);
@@ -138,39 +137,42 @@ export class Messaging {
             return;
         }
         const funcName =
-            remoteCall.func.indexOf('::') >= 0 ?
-                remoteCall.func.substr(remoteCall.func.indexOf('::') + 2) : remoteCall.func;
+            remoteCall.func.indexOf('::') >= 0
+                ? remoteCall.func.substr(remoteCall.func.indexOf('::') + 2)
+                : remoteCall.func;
         const func = this.exposedFunctions.get(funcName);
         if (func) {
             this.executingCalls.set(remoteCall.id, remoteCall.func);
             const args = remoteCall.args ? remoteCall.args : [];
-            func(...args).then(ret => {
-                this.executingCalls.delete(remoteCall.id);
-                // send notify to remote when function call completed
-                this.sendRemoteCall({
-                    id: remoteCall.id,
-                    func: remoteCall.func,
-                    ret: ret,
-                    success: true,
-                    notify: true,
-                    to: remoteCall.from,
-                    from: remoteCall.to
+            func(...args)
+                .then((ret) => {
+                    this.executingCalls.delete(remoteCall.id);
+                    // send notify to remote when function call completed
+                    this.sendRemoteCall({
+                        id: remoteCall.id,
+                        func: remoteCall.func,
+                        ret: ret,
+                        success: true,
+                        notify: true,
+                        to: remoteCall.from,
+                        from: remoteCall.to
+                    });
+                })
+                .catch((err) => {
+                    const errData = {};
+                    Object.getOwnPropertyNames(err).forEach((value, index) => {
+                        (errData as any)[value] = err[value];
+                    });
+                    this.sendRemoteCall({
+                        id: remoteCall.id,
+                        func: remoteCall.func,
+                        ret: errData,
+                        success: false,
+                        notify: true,
+                        to: remoteCall.from,
+                        from: remoteCall.to
+                    });
                 });
-            }).catch(err => {
-                const errData = {};
-                Object.getOwnPropertyNames(err).forEach((value, index) => {
-                    (errData as any)[value] = err[value];
-                });
-                this.sendRemoteCall({
-                    id: remoteCall.id,
-                    func: remoteCall.func,
-                    ret: errData,
-                    success: false,
-                    notify: true,
-                    to: remoteCall.from,
-                    from: remoteCall.to
-                });
-            });
         } else {
             this.sendRemoteCall({
                 id: remoteCall.id,
@@ -231,20 +233,20 @@ const exposeMetadataKey = Symbol('expose');
  * ```
  */
 export function messaging(clientId?: string) {
-    return function <T extends new (...constructorArgs: any[]) => any>(constructorFunction: T) {
+    return function <T extends new (...constructorArgs: any[]) => any>(constructorFunction: T): any {
         //new constructor function
-        const newConstructorFunction: any = function(...args: any[]) {
-            const func: any = function() {
+        const newConstructorFunction: any = function (...args: any[]) {
+            const func: any = function () {
                 return new constructorFunction(...args);
-            }
+            };
             func.prototype = constructorFunction.prototype;
             const result: any = new func(...args);
             Messaging.bind(result, clientId);
             return result;
-        }
+        };
         newConstructorFunction.prototype = constructorFunction.prototype;
         return newConstructorFunction;
-    }
+    };
 }
 
 /**
@@ -263,12 +265,12 @@ export function messaging(clientId?: string) {
  *     }
  * ```
  */
-export function exposable<T extends new (...constructorArgs: any[]) => any>(constructorFunction: T) {
+export function exposable<T extends new (...constructorArgs: any[]) => any>(constructorFunction: T): any {
     //new constructor function
-    const newConstructorFunction: any = function(...args: any[]) {
-        const func: any = function() {
+    const newConstructorFunction: any = function (...args: any[]) {
+        const func: any = function () {
             return new constructorFunction(...args);
-        }
+        };
         func.prototype = constructorFunction.prototype;
         const result: any = new func(...args);
         const exposedMethods: Map<any, any> = Reflect.getMetadata(exposeMetadataKey, result);
@@ -287,7 +289,7 @@ export function exposable<T extends new (...constructorArgs: any[]) => any>(cons
         });
 
         return result;
-    }
+    };
     newConstructorFunction.prototype = constructorFunction.prototype;
     return newConstructorFunction;
 }
@@ -308,13 +310,15 @@ export function exposable<T extends new (...constructorArgs: any[]) => any>(cons
  * ```
  */
 export function expose(identifier: string) {
-    return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor): void {
         const method = descriptor.value;
         let stored: Map<any, any> = Reflect.getMetadata(exposeMetadataKey, target);
         if (stored) {
             const oldBind = stored.get(identifier);
             if (oldBind) {
-                console.log(`warning: duplicated identifier detected! function identifier '${identifier}' is rebinded from ${oldBind} to ${method}`);
+                console.log(
+                    `warning: duplicated identifier detected! function identifier '${identifier}' is rebinded from ${oldBind} to ${method}`
+                );
             }
             stored.set(identifier, method);
         } else {
@@ -337,17 +341,15 @@ export function expose(identifier: string) {
  * ```
  */
 export function call(exposedFunctionIdentifier: string) {
-
-    return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor): void {
         const originalMethod = descriptor.value;
 
-        descriptor.value = function(...args: any[]) {
+        descriptor.value = function (...args: any[]) {
             const messagingInstance = Messaging.getInstance();
             if (messagingInstance) {
                 messagingInstance.call(exposedFunctionIdentifier, ...args);
             }
             originalMethod(...args);
-        }
-
-    }
+        };
+    };
 }
