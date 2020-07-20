@@ -193,7 +193,9 @@ export class Messaging {
      * @param identifier unique identifier for calling remotely
      */
     expose(func: <T>(...args: any[]) => Promise<T>, identifier?: string): void {
-        this.exposedFunctions.set(identifier ? identifier : func.name, func);
+        this.exposedFunctions.set(identifier ? identifier : func.name, async (...args: any[]) => {
+            return func(args);
+        });
     }
 
     /**

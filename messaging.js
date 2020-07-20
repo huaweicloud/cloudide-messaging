@@ -165,7 +165,9 @@ class Messaging {
      * @param identifier unique identifier for calling remotely
      */
     expose(func, identifier) {
-        this.exposedFunctions.set(identifier ? identifier : func.name, func);
+        this.exposedFunctions.set(identifier ? identifier : func.name, (...args) => __awaiter(this, void 0, void 0, function* () {
+            return func(args);
+        }));
     }
     /**
      * make a remote function call

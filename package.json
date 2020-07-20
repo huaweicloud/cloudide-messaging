@@ -10,7 +10,7 @@
     "scripts": {
         "prepare": "npm run build",
         "build": "tsc",
-        "test": "test",
+        "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.ts'",
         "eslint": "eslint 'messaging.ts' --quiet --fix"
     },
     "repository": {
@@ -27,13 +27,18 @@
     },
     "license": "SEE LICENSE IN LICENSE",
     "devDependencies": {
+        "@types/chai": "^4.2.11",
+        "@types/mocha": "^8.0.0",
         "@types/uuid": "^3.4.5",
         "@typescript-eslint/eslint-plugin": "^3.6.1",
         "@typescript-eslint/parser": "^3.6.1",
+        "chai": "^4.2.0",
         "eslint": "^7.4.0",
         "eslint-config-prettier": "^6.11.0",
         "eslint-plugin-prettier": "^3.1.4",
+        "mocha": "^8.0.1",
         "prettier": "^2.0.5",
+        "ts-node": "^8.10.2",
         "typescript": "^3.9.6",
         "typescript-formatter": "7.2.2"
     },

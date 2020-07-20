@@ -12,5 +12,10 @@
     },
     "files": [
         "messaging.ts"
-    ]
+    ],
+    "exclude": [
+        "./node_modules/",
+        "./test/"
+    ],
+    "include": ["test"]
 }
