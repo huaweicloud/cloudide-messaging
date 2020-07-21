@@ -194,7 +194,7 @@ export class Messaging {
      */
     expose(func: <T>(...args: any[]) => Promise<T>, identifier?: string): void {
         this.exposedFunctions.set(identifier ? identifier : func.name, async (...args: any[]) => {
-            return func(args);
+            return func(...args);
         });
     }
 

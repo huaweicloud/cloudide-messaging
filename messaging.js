@@ -166,7 +166,7 @@ class Messaging {
      */
     expose(func, identifier) {
         this.exposedFunctions.set(identifier ? identifier : func.name, (...args) => __awaiter(this, void 0, void 0, function* () {
-            return func(args);
+            return func(...args);
         }));
     }
     /**
