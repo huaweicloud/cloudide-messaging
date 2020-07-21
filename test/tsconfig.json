@@ -10,10 +10,6 @@
         "declaration": true,
         "sourceMap": false
     },
-    "files": [
-        "messaging.ts"
-    ],
-    "exclude": [
-        "./node_modules/"
-    ]
+    "extends": "../tsconfig.json",
+    "include": ["."]
 }

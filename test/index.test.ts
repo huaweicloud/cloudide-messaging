@@ -1,9 +1,10 @@
-import { Deferred, messaging, exposable, expose } from '../messaging';
+import { Deferred, messaging, exposable, expose, Messaging } from '../messaging';
 import { expect } from 'chai';
 import { v4 as uuid } from 'uuid';
 
 describe('test expose function', () => {
     let messageReceived = new Deferred<any>();
+
     @messaging('client')
     class ClientA {
         private messageHandler?: (message: any) => void;
@@ -28,6 +29,7 @@ describe('test expose function', () => {
             }
         }
     }
+
     @exposable
     class Api4ClientA {
         @expose('myFunc')
@@ -44,6 +46,15 @@ describe('test expose function', () => {
 
     beforeEach(() => {
         messageReceived = new Deferred<any>();
+    });
+
+    it('test expose function', () => {
+        const messageInstance = Messaging.getInstance();
+        expect(messageInstance).not.undefined;
+        if (messageInstance) {
+            const exposedFunctions = messageInstance.getExposedFunctions();
+            expect(exposedFunctions).to.include.all.keys('myFunc', 'myFuncThrowError');
+        }
     });
 
     it('test function call retrun message', () => {
