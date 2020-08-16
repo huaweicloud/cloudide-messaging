@@ -14,6 +14,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.call = exports.expose = exports.exposable = exports.messaging = exports.Messaging = exports.Deferred = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const uuid_1 = require("uuid");
 require("reflect-metadata");
 class Deferred {
