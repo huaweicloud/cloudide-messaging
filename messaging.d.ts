@@ -35,8 +35,8 @@ export declare class Messaging {
     private exposedFunctions;
     private pendingCalls;
     private executingCalls;
-    private iframeContext;
-    private readonly from;
+    private iframeContexts;
+    readonly from: string;
     private constructor();
     static bind(iframeContext: IframeLike, clientId?: string): Messaging;
     static getInstance(): Messaging | undefined;

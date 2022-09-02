@@ -60,14 +60,16 @@ export class Messaging {
     // calls received and is executing, stored with id
     private executingCalls: Map<string, string> = new Map();
 
-    private iframeContext: IframeLike;
+    private iframeContexts: IframeLike[] = [];
 
-    private readonly from: string;
+    public readonly from: string;
 
     private constructor(iframeContext: IframeLike, clientId?: string) {
-        this.iframeContext = iframeContext;
-        this.iframeContext.registerMessageHandler(this.onRemoteCall.bind(this));
-        this.iframeContext.onDispose(this.dispose.bind(this));
+        iframeContext.registerMessageHandler(this.onRemoteCall.bind(this));
+        iframeContext.onDispose(() => {
+            this.dispose(iframeContext);
+        });
+        this.iframeContexts.push(iframeContext);
         this.from = clientId ? clientId : uuid();
     }
 
@@ -75,7 +77,11 @@ export class Messaging {
         if (!Messaging.instance) {
             Messaging.instance = new Messaging(iframeContext, clientId);
         } else {
-            console.log(`Messaging is already bind to client ${Messaging.instance.from}`);
+            iframeContext.onDispose(() => {
+                Messaging.instance?.dispose(iframeContext);
+            });
+            Messaging.instance.iframeContexts.push(iframeContext);
+            console.log(`New iframe messaging client added to ${Messaging.instance.from}`);
         }
 
         return Messaging.instance;
@@ -90,19 +96,26 @@ export class Messaging {
         return Messaging.instance;
     }
 
-    private dispose(): void {
-        Messaging.instance = undefined;
+    private dispose(iframeContext: IframeLike): void {
+        const idx = this.iframeContexts.indexOf(iframeContext);
+        if (idx > 0) {
+            this.iframeContexts.splice(idx, 1);
+        }
     }
 
     private sendRemoteCall(remoteCall: RemoteCall): Deferred<any> | undefined {
         remoteCall.from = this.from;
         if (remoteCall.notify) {
-            this.iframeContext.postMessage(remoteCall);
+            this.iframeContexts.forEach((iframeContext) => {
+                iframeContext.postMessage(remoteCall);
+            });
             return undefined;
         }
         const deferred = new Deferred<any>();
         this.pendingCalls.set(remoteCall.id, deferred);
-        this.iframeContext.postMessage(remoteCall);
+        this.iframeContexts.forEach((iframeContext) => {
+            iframeContext.postMessage(remoteCall);
+        });
         return deferred;
     }
 
