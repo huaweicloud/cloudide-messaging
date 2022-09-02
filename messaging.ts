@@ -64,13 +64,18 @@ export class Messaging {
 
     public readonly from: string;
 
-    private constructor(iframeContext: IframeLike, clientId?: string) {
-        iframeContext.registerMessageHandler(this.onRemoteCall.bind(this));
-        iframeContext.onDispose(() => {
-            this.dispose(iframeContext);
-        });
-        this.iframeContexts.push(iframeContext);
+    private constructor(iframeContext?: IframeLike, clientId?: string) {
+        if (iframeContext) {
+            this.registerIframeContext(iframeContext);
+        }
         this.from = clientId ? clientId : uuid();
+    }
+
+    static init(clientId: string): Messaging {
+        if (!Messaging.instance) {
+            Messaging.instance = new Messaging(undefined, clientId);
+        }
+        return Messaging.instance;
     }
 
     static bind(iframeContext: IframeLike, clientId?: string): Messaging {
@@ -90,10 +95,18 @@ export class Messaging {
     static getInstance(): Messaging | undefined {
         if (!Messaging.instance) {
             console.log(
-                'Messaging has not been initialized, using "bind" function to bind and initialize Messaging instance'
+                'Messaging has not been initialized, using "init" or "bind" function to initialize and bind Messaging instance'
             );
         }
         return Messaging.instance;
+    }
+
+    private registerIframeContext(iframeContext: IframeLike) {
+        iframeContext.registerMessageHandler(this.onRemoteCall.bind(this));
+        iframeContext.onDispose(() => {
+            this.dispose(iframeContext);
+        });
+        this.iframeContexts.push(iframeContext);
     }
 
     private dispose(iframeContext: IframeLike): void {

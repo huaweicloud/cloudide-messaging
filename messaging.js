@@ -49,12 +49,16 @@ class Messaging {
         // calls received and is executing, stored with id
         this.executingCalls = new Map();
         this.iframeContexts = [];
-        iframeContext.registerMessageHandler(this.onRemoteCall.bind(this));
-        iframeContext.onDispose(() => {
-            this.dispose(iframeContext);
-        });
-        this.iframeContexts.push(iframeContext);
+        if (iframeContext) {
+            this.registerIframeContext(iframeContext);
+        }
         this.from = clientId ? clientId : uuid_1.v4();
+    }
+    static init(clientId) {
+        if (!Messaging.instance) {
+            Messaging.instance = new Messaging(undefined, clientId);
+        }
+        return Messaging.instance;
     }
     static bind(iframeContext, clientId) {
         if (!Messaging.instance) {
@@ -72,9 +76,16 @@ class Messaging {
     }
     static getInstance() {
         if (!Messaging.instance) {
-            console.log('Messaging has not been initialized, using "bind" function to bind and initialize Messaging instance');
+            console.log('Messaging has not been initialized, using "init" or "bind" function to initialize and bind Messaging instance');
         }
         return Messaging.instance;
+    }
+    registerIframeContext(iframeContext) {
+        iframeContext.registerMessageHandler(this.onRemoteCall.bind(this));
+        iframeContext.onDispose(() => {
+            this.dispose(iframeContext);
+        });
+        this.iframeContexts.push(iframeContext);
     }
     dispose(iframeContext) {
         const idx = this.iframeContexts.indexOf(iframeContext);

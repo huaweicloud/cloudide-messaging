@@ -38,8 +38,10 @@ export declare class Messaging {
     private iframeContexts;
     readonly from: string;
     private constructor();
+    static init(clientId: string): Messaging;
     static bind(iframeContext: IframeLike, clientId?: string): Messaging;
     static getInstance(): Messaging | undefined;
+    private registerIframeContext;
     private dispose;
     private sendRemoteCall;
     private onRemoteCall;
