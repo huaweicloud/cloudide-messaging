@@ -1,6 +1,6 @@
 {
     "name": "@cloudide/messaging",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "expose function among iframes with Promise support based on postMessage API",
     "main": "messaging.js",
     "types": "messaging.d.ts",
