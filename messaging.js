@@ -65,11 +65,7 @@ class Messaging {
             Messaging.instance = new Messaging(iframeContext, clientId);
         }
         else {
-            iframeContext.onDispose(() => {
-                var _a;
-                (_a = Messaging.instance) === null || _a === void 0 ? void 0 : _a.dispose(iframeContext);
-            });
-            Messaging.instance.iframeContexts.push(iframeContext);
+            Messaging.instance.registerIframeContext(iframeContext);
             console.log(`New iframe messaging client added to ${Messaging.instance.from}`);
         }
         return Messaging.instance;
