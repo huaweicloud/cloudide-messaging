@@ -44,6 +44,6 @@
     },
     "dependencies": {
         "reflect-metadata": "^0.1.13",
-        "uuid": "^3.3.3"
+        "uuid": "^14.0.0"
     }
 }
